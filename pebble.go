@@ -70,6 +70,12 @@ func init() {
 	}
 }
 
+// PebbleCacheSizeKey sets the block cache size in bytes. Pebble's default is 8 MiB.
+const PebbleCacheSizeKey = "pebble.cache_size"
+
+// newPebbleCache is a variable so tests can observe the cache's reference count.
+var newPebbleCache = pebble.NewCache
+
 // PebbleDB is a PebbleDB backend.
 type PebbleDB struct {
 	db *pebble.DB
@@ -90,6 +96,11 @@ func NewPebbleDB(name, dir string, opts Options) (DB, error) {
 		files := cast.ToInt(opts.Get("maxopenfiles"))
 		if files > 0 {
 			do.MaxOpenFiles = files
+		}
+		if size := cast.ToInt64(opts.Get(PebbleCacheSizeKey)); size > 0 {
+			// Open takes its own reference, released by Close (or by Open on error).
+			do.Cache = newPebbleCache(size)
+			defer do.Cache.Unref()
 		}
 	}
 
