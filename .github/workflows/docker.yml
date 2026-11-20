@@ -1,6 +1,7 @@
 name: build docker image
 
 on:
+  merge_group:
   workflow_dispatch:
   pull_request:
   push:
@@ -24,5 +25,5 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' && github.event_name != 'merge_group' }}
           tags: ghcr.io/cosmos/cosmos-db/build-test:latest
