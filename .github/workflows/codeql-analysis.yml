@@ -24,7 +24,7 @@ jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
-    container: ghcr.io/cosmos/cosmos-db/build-test:latest
+    container: ghcr.io/${{ github.repository }}/build-test:latest
     permissions:
       actions: read
       contents: read
